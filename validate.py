@@ -12,7 +12,7 @@ map_parsed = set()
 
 def url_clean(url):
     #return url.replace("//","/").replace("https:/","https://").split("#")[0]
-    return url.split("#")[0]
+    return url.split("#")[0].strip()
 
 def check_url(url):
     if url in map_failed:
