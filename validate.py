@@ -65,6 +65,9 @@ def parse_map(url, print_success = False):
             pass
         return
 
+    if "warsaw-hackerspace." in url:
+        return
+
     if print_success:
         print(url)
 
