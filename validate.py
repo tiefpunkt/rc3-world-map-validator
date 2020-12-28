@@ -66,6 +66,10 @@ def parse_map(url, print_success = False, tilesets = False):
         return
 
     if "warsaw-hackerspace." in url:
+        try:
+            map_to_parse.remove(url)
+        except KeyError:
+            pass
         return
 
     if print_success:
