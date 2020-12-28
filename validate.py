@@ -57,7 +57,7 @@ def check_generic_url(url):
         url_failed.add(url)
         return False
 
-def parse_map(url, print_success = False):
+def parse_map(url, print_success = False, tilesets = False):
     if url in map_parsed:
         try:
             map_to_parse.remove(url)
@@ -104,22 +104,23 @@ def parse_map(url, print_success = False):
                             print(url)
                         print("  - %s" % next)
                         has_error = True
-    try:
-        for tileset in data["tilesets"]:
-            ts_url = requests.compat.urljoin(url, tileset["image"])
-            ts_url = url_clean(ts_url)
-            is_ok = check_generic_url(ts_url)
+    if tilesets:
+        try:
+            for tileset in data["tilesets"]:
+                ts_url = requests.compat.urljoin(url, tileset["image"])
+                ts_url = url_clean(ts_url)
+                is_ok = check_generic_url(ts_url)
 
-            if is_ok:
-                if print_success:
-                    print("  + %s" % ts_url)
-            else:
-                if not print_success and not has_error:
-                    print(url)
-                print("  - %s" % ts_url)
-                has_error = True
-    except:
-        pass
+                if is_ok:
+                    if print_success:
+                        print("  + %s" % ts_url)
+                else:
+                    if not print_success and not has_error:
+                        print(url)
+                    print("  - %s" % ts_url)
+                    has_error = True
+        except:
+            pass
 
     map_parsed.add(url)
     try:
@@ -133,6 +134,8 @@ parser.add_argument('--recursive', "-r", action="store_true",
                     help='Recurse into other maps')
 parser.add_argument("--verbose", "-v", action="store_true",
                     help='Print successes as well as failures')
+parser.add_argument("--tilesets", "-t", action="store_true",
+                    help='Check tilesets as well')
 
 args = parser.parse_args()
 
@@ -140,7 +143,7 @@ args = parser.parse_args()
 
 url = url_clean(args.url)
 
-parse_map(url, args.verbose)
+parse_map(url, args.verbose, args.tilesets)
 
 if args.recursive:
     while len(map_to_parse) > 0:
