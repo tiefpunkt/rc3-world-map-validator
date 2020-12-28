@@ -13,7 +13,7 @@ jobs:
         with:
           python-version: '3.x'
       - run: pip install -r requirements.txt
-      - run: python validate.py -r https://lobby.maps.at.rc3.world/main.json > output.log
+      - run: python validate.py -r https://lobby.maps.at.rc3.world/main.json | tee output.log
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v2
         with:
