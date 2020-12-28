@@ -1,0 +1,11 @@
+name: check-all-maps
+on: [push]
+jobs:
+  check-all-maps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - run: python validate.py -r https://lobby.maps.at.rc3.world/main.json
