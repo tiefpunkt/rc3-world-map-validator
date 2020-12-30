@@ -57,7 +57,7 @@ def check_generic_url(url):
         url_failed.add(url)
         return False
 
-def parse_map(url, print_success = False, tilesets = False):
+def parse_map(url, print_success = False, tilesets = False, extract_urls = False):
     if url in map_parsed:
         try:
             map_to_parse.remove(url)
@@ -95,7 +95,11 @@ def parse_map(url, print_success = False, tilesets = False):
     for layer in data["layers"]:
         if "properties" in layer:
             for prop in layer["properties"]:
-                if prop["name"] == "exitSceneUrl" or prop["name"] == "exitUrl":
+                if prop["name"] == "openWebsite":
+                    link = requests.compat.urljoin(url, prop["value"])
+                    if link and extract_urls:
+                        print("  * %s" % link)
+                elif prop["name"] == "exitSceneUrl" or prop["name"] == "exitUrl":
                     next = requests.compat.urljoin(url, prop["value"])
                     next = url_clean(next)
                     is_ok = check_map_url(next)
@@ -140,6 +144,8 @@ parser.add_argument("--verbose", "-v", action="store_true",
                     help='Print successes as well as failures')
 parser.add_argument("--tilesets", "-t", action="store_true",
                     help='Check tilesets as well')
+parser.add_argument("--extract-urls", "-u", action="store_true",
+                    help='Extract openWebsite URLs')
 
 args = parser.parse_args()
 
@@ -147,9 +153,9 @@ args = parser.parse_args()
 
 url = url_clean(args.url)
 
-parse_map(url, args.verbose, args.tilesets)
+parse_map(url, args.verbose, args.tilesets, args.extract_urls)
 
 if args.recursive:
     while len(map_to_parse) > 0:
         for url in list(map_to_parse):
-            parse_map(url)
+            parse_map(url, args.verbose, args.tilesets, args.extract_urls)
