@@ -34,5 +34,6 @@ optional arguments:
   -h, --help        show this help message and exit
   --recursive, -r   Recurse into other maps
   --extract-urls -l Extract openWebsite URLs
+  --get-badges -b   Extract getBadge properties
   --verbose, -v     Print successes as well as failures
 ```

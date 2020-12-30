@@ -57,7 +57,7 @@ def check_generic_url(url):
         url_failed.add(url)
         return False
 
-def parse_map(url, print_success = False, tilesets = False, extract_urls = False):
+def parse_map(url, print_success = False, tilesets = False, extract_urls = False, get_badges = False):
     if url in map_parsed:
         try:
             map_to_parse.remove(url)
@@ -95,10 +95,14 @@ def parse_map(url, print_success = False, tilesets = False, extract_urls = False
     for layer in data["layers"]:
         if "properties" in layer:
             for prop in layer["properties"]:
-                if prop["name"] == "openWebsite":
+                if prop["name"] == "getBadge":
+                    badge = prop["value"]
+                    if badge and get_badges:
+                        print("  * %s" % badge)
+                elif prop["name"] == "openWebsite":
                     link = requests.compat.urljoin(url, prop["value"])
                     if link and extract_urls:
-                        print("  * %s" % link)
+                        print("  @ %s" % link)
                 elif prop["name"] == "exitSceneUrl" or prop["name"] == "exitUrl":
                     next = requests.compat.urljoin(url, prop["value"])
                     next = url_clean(next)
@@ -146,6 +150,8 @@ parser.add_argument("--tilesets", "-t", action="store_true",
                     help='Check tilesets as well')
 parser.add_argument("--extract-urls", "-u", action="store_true",
                     help='Extract openWebsite URLs')
+parser.add_argument("--get-badges", "-b", action="store_true",
+                    help='Extract getBadge properties')
 
 args = parser.parse_args()
 
@@ -153,9 +159,9 @@ args = parser.parse_args()
 
 url = url_clean(args.url)
 
-parse_map(url, args.verbose, args.tilesets, args.extract_urls)
+parse_map(url, args.verbose, args.tilesets, args.extract_urls, args.get_badges)
 
 if args.recursive:
     while len(map_to_parse) > 0:
         for url in list(map_to_parse):
-            parse_map(url, args.verbose, args.tilesets, args.extract_urls)
+            parse_map(url, args.verbose, args.tilesets, args.extract_urls, args.get_badges)
